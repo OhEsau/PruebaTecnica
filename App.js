@@ -1,114 +1,75 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, {useState, useEffect, useMemo} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage'
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import {AuthContext} from './Utils/authContext';
+import {SplashScreen} from './Utils/SplashScreen';
+import {RootStackScreen} from './Screens/StackScreens/RootStack'
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [userToken, setUserToken] = useState(null);
+  const [message, setMessage] = useState('Espera un segundo por favor');
+  const [clientType, setClientType] = useState(false);
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+  const authContext = useMemo(()=>{
+    return {
+      signIn: async (data) => {
+        setIsLoading(true);
+        setMessage('Esperando Respuesta');
+        try{
+          //let infoUser = await AsyncStorage.getItem('dataUser');
+          setMessage('Iniciando sesión')
+          infoUser = JSON.parse(infoUser);
+          setUserToken(true);
+          setClientType(true);
+          setIsLoading(false);
+        } catch(e) {
+          alert('Inicio Fallido')
+        }
+      },
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+      signUp: async(data) =>{
+        setIsLoading(true);
+        setMessage('Registrando nuevo usuario');
+        try {
+          //const registro = await registrarUsuario(data);
+        } catch (e){
+          console.log(e);
+          alert('Falló el registro')
+          setMessage('Regresando al menú principal');
+        }
+        setIsLoading(false);
+      },
 
-export default App;
+      signOut: async () => {
+        setIsLoading(true);
+        setMessage('Saliendo de la aplicación')
+        try{
+          await AsyncStorage.removeItem('dataUser');
+          setUserToken(false);
+        } catch(e){
+          console.log(e)
+        }
+      }
+    }
+  })
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  if(isLoading){
+    return <SplashScreen message={message}/>
+  }
+
+  return(
+    <AuthContext.Provider>
+      <NavigationContainer>
+        <RootStackScreen userToken={userToken} clientType={clientType} />
+      </NavigationContainer>
+    </AuthContext.Provider>
+  )
+}
