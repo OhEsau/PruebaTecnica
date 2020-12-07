@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator, Image} from "react-native";
 import {styles} from '../Utils/styles'
 
 const ScreenContainer = ({ children }) => (
-    <View style={styles.container}>{children}</View>
+    <View style={styles.splash}>{children}</View>
 );
 
 export const SplashScreen = (props) => (
