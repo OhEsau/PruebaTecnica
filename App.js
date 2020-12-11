@@ -8,9 +8,8 @@ import {RootStackScreen} from './Screens/StackScreens/RootStack'
 
 export default () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [userToken, setUserToken] = useState(null);
+  const [userToken, setUserToken] = useState(false);
   const [message, setMessage] = useState('Espera un segundo por favor');
-  const [clientType, setClientType] = useState(false);
 
   const authContext = useMemo(()=>{
     return {
@@ -20,13 +19,13 @@ export default () => {
         try{
           //let infoUser = await AsyncStorage.getItem('dataUser');
           setMessage('Iniciando sesión')
-          infoUser = JSON.parse(infoUser);
+          //infoUser = JSON.parse(infoUser);
           setUserToken(true);
-          setClientType(true);
           setIsLoading(false);
         } catch(e) {
           alert('Inicio Fallido')
         }
+        setIsLoading(false)
       },
 
       signUp: async(data) =>{
@@ -51,9 +50,10 @@ export default () => {
         } catch(e){
           console.log(e)
         }
+        setIsLoading(false);
       }
     }
-  })
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -66,9 +66,9 @@ export default () => {
   }
 
   return(
-    <AuthContext.Provider>
+    <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-        <RootStackScreen userToken={userToken} clientType={clientType} />
+        <RootStackScreen userToken={userToken}/>
       </NavigationContainer>
     </AuthContext.Provider>
   )
