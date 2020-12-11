@@ -28,7 +28,7 @@ export const HomeScreen = ({navigation, route}) => {
 
     const ItemBook = ({item}) => {
         return(
-            <ListItem bottomDivider onPress={()=>{navigation.navigate('Book', {id: item.id, genre: item.genre})}}>
+            <ListItem bottomDivider onPress={()=>{navigation.push('BookItem', {id: item.id, genre: item.genre})}}>
                 <Avatar 
                     size='medium'
                     source={item.image_url ?(
